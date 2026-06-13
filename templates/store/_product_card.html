@@ -1,0 +1,39 @@
+<div class="col-6 col-md-4 col-lg-3">
+  <div class="product-card card h-100 shadow-sm border-0 position-relative">
+    <a href="{{ product.get_absolute_url }}">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" class="card-img-top product-img" alt="{{ product.name }}">
+      {% else %}
+        <div class="card-img-top product-img bg-light d-flex align-items-center justify-content-center">
+          <i class="bi bi-image fs-1 text-secondary"></i>
+        </div>
+      {% endif %}
+    </a>
+    {% if product.discount_percent %}
+      <span class="badge bg-danger position-absolute top-0 start-0 m-2">{{ product.discount_percent }}% OFF</span>
+    {% endif %}
+    <div class="card-body p-2">
+      <p class="card-title small fw-semibold mb-1 text-truncate">{{ product.name }}</p>
+      <div class="text-warning small mb-1">
+        {% for i in "12345" %}
+          {% if forloop.counter <= product.rating %}<i class="bi bi-star-fill"></i>
+          {% else %}<i class="bi bi-star"></i>{% endif %}
+        {% endfor %}
+        <span class="text-muted">({{ product.rating_count }})</span>
+      </div>
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="fw-bold text-dark">₹{{ product.price }}</span>
+        {% if product.original_price %}
+          <span class="text-muted text-decoration-line-through small">₹{{ product.original_price }}</span>
+        {% endif %}
+      </div>
+      <form method="post" action="{% url 'cart:cart_add' product.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="quantity" value="1">
+        <button class="btn btn-warning btn-sm w-100 fw-semibold">
+          <i class="bi bi-cart-plus"></i> Add to Cart
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

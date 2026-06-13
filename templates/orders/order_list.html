@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}My Orders — ShopKart{% endblock %}
+{% block content %}
+<div class="container mt-3">
+  <h4 class="fw-bold mb-3"><i class="bi bi-bag"></i> My Orders</h4>
+  {% if orders %}
+    {% for order in orders %}
+    <div class="card shadow-sm mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center bg-white">
+        <span class="fw-semibold">Order #{{ order.id }}
+          <small class="text-muted ms-2">{{ order.created|date:"d M Y" }}</small>
+        </span>
+        <span class="badge bg-warning text-dark">{{ order.get_status_display }}</span>
+      </div>
+      <div class="card-body">
+        {% for item in order.items.all %}
+        <div class="d-flex align-items-center gap-3 mb-2">
+          {% if item.product.image %}
+            <img src="{{ item.product.image.url }}"
+                 style="width:60px;height:60px;object-fit:cover;" class="rounded">
+          {% endif %}
+          <div>
+            <p class="mb-0 fw-semibold">{{ item.product.name }}</p>
+            <p class="mb-0 small text-muted">Qty: {{ item.quantity }} × ₹{{ item.price }}</p>
+          </div>
+          <div class="ms-auto fw-bold">₹{{ item.get_cost }}</div>
+        </div>
+        {% endfor %}
+        <hr>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="fw-bold">Total: <span class="text-danger">₹{{ order.total_price }}</span></span>
+          <a href="{% url 'orders:order_detail' order.id %}"
+             class="btn btn-sm btn-outline-secondary">View Details</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-bag-x fs-1 text-muted"></i>
+    <p class="text-muted mt-3">No orders yet.</p>
+    <a href="{% url 'store:product_list' %}" class="btn btn-warning">Start Shopping</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -11,12 +11,19 @@ def home(request):
     bestsellers = Product.objects.filter(is_bestseller=True, available=True)[:8]
     new_arrivals= Product.objects.filter(available=True).order_by('-created')[:8]
     deals       = Product.objects.filter(available=True).exclude(original_price=None)[:8]
+
+    wishlist_ids = []
+    if request.user.is_authenticated:
+        from accounts.models import Wishlist
+        wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
+
     return render(request, 'store/home.html', {
-        'categories':  categories,
-        'featured':    featured,
-        'bestsellers': bestsellers,
-        'new_arrivals':new_arrivals,
-        'deals':       deals,
+        'categories':   categories,
+        'featured':     featured,
+        'bestsellers':  bestsellers,
+        'new_arrivals': new_arrivals,
+        'deals':        deals,
+        'wishlist_ids': wishlist_ids,
     })
 
 
@@ -47,12 +54,18 @@ def product_list(request, category_slug=None):
     products = products.order_by(sort_map.get(sort, '-created'))
     brands   = Product.objects.values_list('brand', flat=True).distinct().exclude(brand='')
 
+    wishlist_ids = []
+    if request.user.is_authenticated:
+        from accounts.models import Wishlist
+        wishlist_ids = list(Wishlist.objects.filter(user=request.user).values_list('product_id', flat=True))
+
     return render(request, 'store/product_list.html', {
-        'category':   category,
-        'categories': Category.objects.all(),
-        'products':   products,
-        'sort':       sort,
-        'brands':     brands,
+        'category':    category,
+        'categories':  Category.objects.all(),
+        'products':    products,
+        'sort':        sort,
+        'brands':      brands,
+        'wishlist_ids': wishlist_ids,
     })
 
 

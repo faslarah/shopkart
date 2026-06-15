@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
-{% block title %}Register — ShopKart{% endblock %}
+{% block title %}Register — OpenMall{% endblock %}
 {% block content %}
 <div class="container mt-4" style="max-width:500px;">
   <div class="card shadow">
     <div class="card-body p-4">
       <h4 class="fw-bold mb-1">Create Account</h4>
-      <p class="text-muted small mb-4">Join millions of shoppers on ShopKart</p>
+      <p class="text-muted small mb-4">Join millions of shoppers on OpenMall</p>
       <form method="post">
         {% csrf_token %}
         {{ form|crispy }}

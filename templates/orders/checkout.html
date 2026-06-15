@@ -2,11 +2,11 @@
 {% block title %}Checkout — ShopKart{% endblock %}
 {% block content %}
 <div class="container mt-3">
-  <h4 class="fw-bold mb-3">Checkout</h4>
+  <h4 class="fw-bold mb-3" style="color:white;">Checkout</h4>
   <div class="row g-3">
     <div class="col-md-7">
       <div class="card shadow-sm">
-        <div class="card-header bg-white fw-bold">Delivery Address</div>
+        <div class="card-header fw-bold">Delivery Address</div>
         <div class="card-body">
           <form method="post">
             {% csrf_token %}
@@ -46,17 +46,42 @@
                 <label class="form-label">Pincode *</label>
                 <input type="text" name="pincode" class="form-control" required>
               </div>
-              <div class="col-12">
-                <h6 class="fw-bold mt-2">Payment Method</h6>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="payment" value="cod" checked>
-                  <label class="form-check-label">
-                    <i class="bi bi-cash-coin"></i> Cash on Delivery
-                  </label>
+
+              <!-- PAYMENT METHOD -->
+              <div class="col-12 mt-2">
+                <h6 class="fw-bold" style="color:white;">Payment Method</h6>
+                <div class="row g-2 mt-1">
+
+                  <!-- COD -->
+                  <div class="col-6">
+                    <input type="radio" class="btn-check" name="payment"
+                           id="cod" value="cod" checked>
+                    <label class="btn w-100 text-start p-3" for="cod"
+                           style="background:var(--dark4); border:2px solid rgba(0,212,255,0.2); border-radius:12px; color:white; transition:all .2s;">
+                      <i class="bi bi-cash-coin text-warning fs-4 d-block mb-1"></i>
+                      <span class="fw-bold d-block" style="font-size:.9rem;">Cash on Delivery</span>
+                      <small style="color:#8899cc;">Pay when you receive</small>
+                    </label>
+                  </div>
+
+                  <!-- STRIPE -->
+                  <div class="col-6">
+                    <input type="radio" class="btn-check" name="payment"
+                           id="stripe" value="stripe">
+                    <label class="btn w-100 text-start p-3" for="stripe"
+                           style="background:var(--dark4); border:2px solid rgba(0,212,255,0.2); border-radius:12px; color:white; transition:all .2s;">
+                      <i class="bi bi-credit-card text-primary fs-4 d-block mb-1"></i>
+                      <span class="fw-bold d-block" style="font-size:.9rem;">Pay with Card</span>
+                      <small style="color:#8899cc;">Stripe — Secure payment</small>
+                    </label>
+                  </div>
+
                 </div>
               </div>
+
               <div class="col-12">
-                <button type="submit" class="btn btn-danger w-100 fw-bold btn-lg">
+                <button type="submit"
+                        style="background:linear-gradient(135deg,#00d4ff,#7b2fff); border:none; color:white; font-weight:700; padding:14px; border-radius:12px; width:100%; font-size:1rem; cursor:pointer;">
                   <i class="bi bi-bag-check"></i> Place Order
                 </button>
               </div>
@@ -66,22 +91,23 @@
       </div>
     </div>
 
+    <!-- ORDER SUMMARY -->
     <div class="col-md-5">
       <div class="card shadow-sm">
-        <div class="card-header bg-white fw-bold">Order Summary</div>
+        <div class="card-header fw-bold">Order Summary</div>
         <div class="card-body">
           {% for item in cart %}
           <div class="d-flex justify-content-between mb-2 small">
-            <span>{{ item.product.name }} × {{ item.quantity }}</span>
-            <span>₹{{ item.total_price }}</span>
+            <span style="color:#ccd6ff;">{{ item.product.name }} × {{ item.quantity }}</span>
+            <span style="color:#00d4ff;">₹{{ item.total_price }}</span>
           </div>
           {% endfor %}
-          <hr>
+          <hr style="border-color:rgba(0,212,255,0.1);">
           <div class="d-flex justify-content-between fw-bold">
-            <span>Total</span>
-            <span class="text-danger">₹{{ cart.get_total_price }}</span>
+            <span style="color:white;">Total</span>
+            <span style="color:#00d4ff; font-size:1.1rem;">₹{{ cart.get_total_price }}</span>
           </div>
-          <p class="text-success small mt-2 mb-0">
+          <p class="mt-2 small" style="color:#43e97b;">
             <i class="bi bi-truck"></i> Free Delivery
           </p>
         </div>
@@ -89,4 +115,12 @@
     </div>
   </div>
 </div>
+
+<style>
+.btn-check:checked + label {
+  border-color: #00d4ff !important;
+  box-shadow: 0 0 15px rgba(0,212,255,0.3);
+  background: rgba(0,212,255,0.08) !important;
+}
+</style>
 {% endblock %}

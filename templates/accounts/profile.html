@@ -1,81 +1,179 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
-{% block title %}My Profile — ShopKart{% endblock %}
+{% block title %}My Profile — OpenMall{% endblock %}
 {% block content %}
-<div class="container mt-3">
-  <div class="row g-3">
+<div style="display:flex; gap:24px; align-items:flex-start; padding:0 10px;">
 
-    <!-- SIDEBAR -->
-    <div class="col-md-3">
-      <div class="card shadow-sm">
-        <div class="card-body text-center">
-          <i class="bi bi-person-circle display-4 text-warning"></i>
-          <h6 class="fw-bold mt-2">{{ user.get_full_name|default:user.username }}</h6>
-          <p class="text-muted small mb-0">{{ user.email }}</p>
+  <!-- SIDEBAR -->
+  <div style="width:260px; flex-shrink:0; background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:16px; overflow:hidden;">
+
+    <!-- AVATAR -->
+    <div style="background:linear-gradient(135deg,#00d4ff,#7b2fff); padding:30px 20px; text-align:center;">
+      {% if profile.avatar %}
+        <img src="{{ profile.avatar.url }}"
+             style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid white; margin-bottom:12px;">
+      {% else %}
+        <div style="width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
+          <i class="bi bi-person-fill" style="font-size:2.5rem; color:white;"></i>
         </div>
-        <ul class="list-group list-group-flush small">
-          <li class="list-group-item">
-            <a href="{% url 'accounts:profile' %}" class="text-dark text-decoration-none">
-              <i class="bi bi-person"></i> My Profile
-            </a>
-          </li>
-          <li class="list-group-item">
-            <a href="{% url 'orders:order_list' %}" class="text-dark text-decoration-none">
-              <i class="bi bi-bag"></i> My Orders
-            </a>
-          </li>
-          <li class="list-group-item">
-            <a href="{% url 'store:wishlist' %}" class="text-dark text-decoration-none">
-              <i class="bi bi-heart"></i> Wishlist
-            </a>
-          </li>
-          <li class="list-group-item">
-            <a href="{% url 'accounts:logout' %}" class="text-danger text-decoration-none">
-              <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
-          </li>
-        </ul>
+      {% endif %}
+      <p style="color:white; font-weight:700; margin:0; font-size:1rem;">{{ user.get_full_name|default:user.username }}</p>
+      <p style="color:rgba(255,255,255,0.7); font-size:.8rem; margin:4px 0 0;">{{ user.email }}</p>
+    </div>
+
+    <!-- MENU -->
+    <div style="padding:10px 0;">
+      <a href="{% url 'accounts:profile' %}"
+         style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#ccd6ff; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid #00d4ff; background:rgba(0,212,255,0.05);">
+        <i class="bi bi-person" style="color:#00d4ff;"></i> My Profile
+      </a>
+      <a href="{% url 'orders:order_list' %}"
+         style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#8899cc; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid transparent; transition:all .2s;"
+         onmouseover="this.style.color='#00d4ff'; this.style.borderColor='#00d4ff'; this.style.background='rgba(0,212,255,0.05)'"
+         onmouseout="this.style.color='#8899cc'; this.style.borderColor='transparent'; this.style.background='transparent'">
+        <i class="bi bi-bag"></i> My Orders
+      </a>
+      <a href="{% url 'store:wishlist' %}"
+         style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#8899cc; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid transparent; transition:all .2s;"
+         onmouseover="this.style.color='#00d4ff'; this.style.borderColor='#00d4ff'; this.style.background='rgba(0,212,255,0.05)'"
+         onmouseout="this.style.color='#8899cc'; this.style.borderColor='transparent'; this.style.background='transparent'">
+        <i class="bi bi-heart"></i> Wishlist
+      </a>
+      <a href="{% url 'accounts:logout' %}"
+         style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#ff2d78; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid transparent; transition:all .2s;"
+         onmouseover="this.style.borderColor='#ff2d78'; this.style.background='rgba(255,45,120,0.05)'"
+         onmouseout="this.style.borderColor='transparent'; this.style.background='transparent'">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div style="flex:1; display:flex; flex-direction:column; gap:24px;">
+
+    <!-- EDIT PROFILE CARD -->
+    <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:16px; overflow:hidden;">
+      <div style="padding:16px 24px; border-bottom:1px solid rgba(0,212,255,0.1); display:flex; align-items:center; gap:10px;">
+        <i class="bi bi-pencil-square" style="color:#00d4ff;"></i>
+        <span style="color:white; font-weight:600;">Edit Profile</span>
+      </div>
+      <div style="padding:24px;">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- PHONE -->
+          <div style="margin-bottom:16px;">
+            <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">Phone</label>
+            <input type="text" name="phone" value="{{ profile.phone }}"
+                   style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none; font-family:'Poppins',sans-serif;"
+                   onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'">
+          </div>
+
+          <!-- ADDRESS -->
+          <div style="margin-bottom:16px;">
+            <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">Address</label>
+            <textarea name="address" rows="3"
+                      style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none; font-family:'Poppins',sans-serif; resize:vertical;"
+                      onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'">{{ profile.address }}</textarea>
+          </div>
+
+          <!-- CITY & STATE -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+            <div>
+              <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">City</label>
+              <input type="text" name="city" value="{{ profile.city }}"
+                     style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none; font-family:'Poppins',sans-serif;"
+                     onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'">
+            </div>
+            <div>
+              <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">State</label>
+              <input type="text" name="state" value="{{ profile.state }}"
+                     style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none; font-family:'Poppins',sans-serif;"
+                     onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'">
+            </div>
+          </div>
+
+          <!-- PINCODE -->
+          <div style="margin-bottom:16px;">
+            <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">Pincode</label>
+            <input type="text" name="pincode" value="{{ profile.pincode }}"
+                   style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none; font-family:'Poppins',sans-serif;"
+                   onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'">
+          </div>
+
+          <!-- AVATAR UPLOAD -->
+          <div style="margin-bottom:24px;">
+            <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">Profile Photo</label>
+            {% if profile.avatar %}
+              <div style="display:flex; align-items:center; gap:14px; margin-bottom:10px;">
+                <img src="{{ profile.avatar.url }}"
+                     style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid rgba(0,212,255,0.3);">
+                <span style="color:#8899cc; font-size:.82rem;">Current photo</span>
+              </div>
+            {% endif %}
+            <div style="background:#111d3c; border:2px dashed rgba(0,212,255,0.25); border-radius:10px; padding:20px; text-align:center; cursor:pointer; position:relative;"
+                 onclick="document.getElementById('avatar-input').click()"
+                 onmouseover="this.style.borderColor='#00d4ff'; this.style.background='rgba(0,212,255,0.04)'"
+                 onmouseout="this.style.borderColor='rgba(0,212,255,0.25)'; this.style.background='#111d3c'">
+              <i class="bi bi-cloud-upload" style="font-size:1.8rem; color:#00d4ff; display:block; margin-bottom:8px;"></i>
+              <p style="color:#8899cc; font-size:.85rem; margin:0;">Click to upload photo</p>
+              <p style="color:#6b7db3; font-size:.75rem; margin:4px 0 0;">JPG, PNG — Max 5MB</p>
+              <input type="file" name="avatar" id="avatar-input" accept="image/*"
+                     style="position:absolute; opacity:0; width:100%; height:100%; top:0; left:0; cursor:pointer;"
+                     onchange="showFileName(this)">
+            </div>
+            <p id="file-name" style="color:#00d4ff; font-size:.8rem; margin-top:6px; display:none;"></p>
+          </div>
+
+          <button type="submit"
+                  style="background:linear-gradient(135deg,#00d4ff,#7b2fff); border:none; color:white; font-weight:600; padding:12px 32px; border-radius:10px; font-size:.9rem; cursor:pointer; font-family:'Poppins',sans-serif;">
+            <i class="bi bi-save"></i> Save Changes
+          </button>
+        </form>
       </div>
     </div>
 
-    <!-- MAIN -->
-    <div class="col-md-9">
-      <div class="card shadow-sm mb-3">
-        <div class="card-header bg-white fw-bold">Edit Profile</div>
-        <div class="card-body">
-          <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button type="submit" class="btn btn-warning fw-bold">
-              <i class="bi bi-save"></i> Save Changes
-            </button>
-          </form>
-        </div>
+    <!-- RECENT ORDERS -->
+    <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:16px; overflow:hidden;">
+      <div style="padding:16px 24px; border-bottom:1px solid rgba(0,212,255,0.1); display:flex; align-items:center; gap:10px;">
+        <i class="bi bi-bag" style="color:#00d4ff;"></i>
+        <span style="color:white; font-weight:600;">Recent Orders</span>
       </div>
-
-      <div class="card shadow-sm">
-        <div class="card-header bg-white fw-bold">Recent Orders</div>
-        <div class="card-body">
-          {% for order in orders|slice:":5" %}
-          <div class="d-flex justify-content-between align-items-center border-bottom py-2">
-            <div>
-              <strong>Order #{{ order.id }}</strong>
-              <span class="text-muted small ms-2">{{ order.created|date:"d M Y" }}</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="badge bg-warning text-dark">{{ order.get_status_display }}</span>
-              <strong>₹{{ order.total_price }}</strong>
-              <a href="{% url 'orders:order_detail' order.id %}"
-                 class="btn btn-sm btn-outline-secondary">View</a>
-            </div>
+      <div style="padding:16px 24px;">
+        {% for order in orders|slice:":5" %}
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid rgba(0,212,255,0.07);">
+          <div>
+            <span style="color:white; font-weight:600; font-size:.9rem;">Order #{{ order.id }}</span>
+            <span style="color:#6b7db3; font-size:.8rem; margin-left:10px;">{{ order.created|date:"d M Y" }}</span>
           </div>
-          {% empty %}
-            <p class="text-muted mb-0">No orders yet.</p>
-          {% endfor %}
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span style="background:linear-gradient(135deg,#00d4ff,#7b2fff); color:white; font-size:.72rem; padding:3px 10px; border-radius:10px; font-weight:600;">
+              {{ order.get_status_display }}
+            </span>
+            <span style="color:#00d4ff; font-weight:700;">₹{{ order.total_price }}</span>
+            <a href="{% url 'orders:order_detail' order.id %}"
+               style="background:rgba(0,212,255,0.1); color:#00d4ff; border:1px solid rgba(0,212,255,0.3); padding:4px 14px; border-radius:8px; font-size:.8rem; text-decoration:none; font-weight:500;"
+               onmouseover="this.style.background='rgba(0,212,255,0.2)'"
+               onmouseout="this.style.background='rgba(0,212,255,0.1)'">
+              View
+            </a>
+          </div>
         </div>
+        {% empty %}
+          <p style="color:#6b7db3; text-align:center; padding:20px 0; margin:0;">No orders yet.</p>
+        {% endfor %}
       </div>
     </div>
 
   </div>
 </div>
+
+<script>
+function showFileName(input) {
+  const label = document.getElementById('file-name');
+  if (input.files && input.files[0]) {
+    label.textContent = '✓ ' + input.files[0].name;
+    label.style.display = 'block';
+  }
+}
+</script>
 {% endblock %}

@@ -52,4 +52,4 @@ def profile(request):
     else:
         form = ProfileForm(instance=profile_obj)
 
-    return render(request, 'accounts/profile.html', {'form': form, 'orders': orders})
+    return render(request, 'accounts/profile.html', {'form': form, 'orders': orders, 'profile': profile_obj})

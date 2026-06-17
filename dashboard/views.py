@@ -129,5 +129,6 @@ def dashboard(request):
         'low_stock':        low_stock,
         'recent_customers': recent_customers,
         'new_customers':    new_customers,
+        'category_labels_list': category_labels,
     }
     return render(request, 'dashboard/dashboard.html', context)

@@ -27,6 +27,12 @@
       &nbsp;|&nbsp;
       <a href="{% url 'accounts:register' %}" style="color:#8899cc; text-decoration:none;" onmouseover="this.style.color='#00d4ff'" onmouseout="this.style.color='#8899cc'">Register</a>
     {% endif %}
+    {% if user.is_staff %}
+  <a href="{% url 'dashboard:dashboard' %}" style="color:#00d4ff; text-decoration:none;" 
+     onmouseover="this.style.color='white'" onmouseout="this.style.color='#00d4ff'">
+    <i class="bi bi-speedometer2"></i> Dashboard
+  </a> &nbsp;|&nbsp;
+{% endif %}
   </span>
 </div>
 

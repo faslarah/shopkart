@@ -2,11 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 import stripe
 from cart.cart import Cart
 from .models import Order, OrderItem
+from accounts.loyalty import award_points
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -19,6 +18,15 @@ def checkout(request):
         return redirect('store:home')
 
     if request.method == 'POST':
+        # Handle points redemption
+        points_to_use = int(request.POST.get('use_points', 0) or 0)
+        discount = 0
+        if points_to_use >= 100:
+            from accounts.loyalty import redeem_points
+            discount = redeem_points(request.user, points_to_use)
+
+        total = max(cart.get_total_price() - discount, 0)
+
         order = Order.objects.create(
             user        = request.user,
             first_name  = request.POST['first_name'],
@@ -29,7 +37,7 @@ def checkout(request):
             city        = request.POST['city'],
             state       = request.POST['state'],
             pincode     = request.POST['pincode'],
-            total_price = cart.get_total_price(),
+            total_price = total,
             paid        = False,
         )
         for item in cart:
@@ -45,8 +53,9 @@ def checkout(request):
         if payment_method == 'cod':
             order.paid = True
             order.save()
+            earned = award_points(request.user, total)
             cart.clear()
-            messages.success(request, f'Order #{order.id} placed successfully!')
+            messages.success(request, f'Order #{order.id} placed! You earned {earned} loyalty points.')
             return redirect('orders:order_detail', order_id=order.id)
 
         elif payment_method == 'stripe':
@@ -59,7 +68,6 @@ def checkout(request):
 def stripe_payment(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
 
-    # Create Stripe Checkout Session (hosted page like in your photo)
     line_items = []
     for item in order.items.all():
         line_items.append({
@@ -67,7 +75,7 @@ def stripe_payment(request, order_id):
                 'currency': 'inr',
                 'product_data': {
                     'name': item.product.name,
-                    'description': item.product.brand or 'ShopKart Product',
+                    'description': item.product.brand or 'OpenMall Product',
                 },
                 'unit_amount': int(item.price * 100),
             },
@@ -79,27 +87,23 @@ def stripe_payment(request, order_id):
         line_items=line_items,
         mode='payment',
         customer_email=order.email,
-        success_url=request.build_absolute_uri(
-            f'/orders/success/{order.id}/'
-        ),
-        cancel_url=request.build_absolute_uri(
-            f'/orders/cancel/{order.id}/'
-        ),
+        success_url=request.build_absolute_uri(f'/orders/success/{order.id}/'),
+        cancel_url=request.build_absolute_uri(f'/orders/cancel/{order.id}/'),
         metadata={'order_id': order.id},
     )
 
     return redirect(session.url, permanent=False)
+
 
 @login_required
 def payment_success(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     order.paid = True
     order.save()
-
+    earned = award_points(request.user, order.total_price)
     cart = Cart(request)
     cart.clear()
-
-    messages.success(request, f'Payment successful! Order #{order.id} confirmed.')
+    messages.success(request, f'Payment successful! Order #{order.id} confirmed. You earned {earned} loyalty points.')
     return redirect('orders:order_detail', order_id=order.id)
 
 

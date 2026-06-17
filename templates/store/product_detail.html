@@ -90,9 +90,14 @@
                 {% endif %}
               </form>
               {% if product.in_stock %}
-                <a href="{% url 'orders:checkout' %}" class="btn btn-danger w-100 fw-bold">
-                  <i class="bi bi-bolt"></i> Buy Now
-                </a>
+                <form method="post" action="{% url 'cart:cart_add' product.id %}">
+  {% csrf_token %}
+  <input type="hidden" name="quantity" value="1">
+  <input type="hidden" name="buy_now" value="1">
+  <button type="submit" style="background:linear-gradient(135deg,#ff2d78,#7b2fff); border:none; color:white; font-weight:700; padding:12px; border-radius:10px; width:100%; font-size:.95rem; cursor:pointer;">
+    <i class="bi bi-bolt-fill"></i> Buy Now
+  </button>
+</form>
               {% else %}
                 <button class="btn btn-secondary w-100" disabled>Out of Stock</button>
               {% endif %}

@@ -10,6 +10,8 @@ class Profile(models.Model):
     state   = models.CharField(max_length=100, blank=True)
     pincode = models.CharField(max_length=10, blank=True)
     avatar  = models.ImageField(upload_to='avatars/', blank=True)
+    points = models.IntegerField(default=0)
+    points_redeemed = models.IntegerField(default=0)  
 
     def __str__(self):
         return f'{self.user.username} Profile'

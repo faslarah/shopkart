@@ -5,12 +5,9 @@
 
   <!-- SIDEBAR -->
   <div style="width:260px; flex-shrink:0; background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:16px; overflow:hidden;">
-
-    <!-- AVATAR -->
     <div style="background:linear-gradient(135deg,#00d4ff,#7b2fff); padding:30px 20px; text-align:center;">
       {% if profile.avatar %}
-        <img src="{{ profile.avatar.url }}"
-             style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid white; margin-bottom:12px;">
+        <img src="{{ profile.avatar.url }}" style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid white; margin-bottom:12px;">
       {% else %}
         <div style="width:80px; height:80px; border-radius:50%; background:rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; margin:0 auto 12px;">
           <i class="bi bi-person-fill" style="font-size:2.5rem; color:white;"></i>
@@ -19,27 +16,21 @@
       <p style="color:white; font-weight:700; margin:0; font-size:1rem;">{{ user.get_full_name|default:user.username }}</p>
       <p style="color:rgba(255,255,255,0.7); font-size:.8rem; margin:4px 0 0;">{{ user.email }}</p>
     </div>
-
-    <!-- MENU -->
     <div style="padding:10px 0;">
-      <a href="{% url 'accounts:profile' %}"
-         style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#ccd6ff; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid #00d4ff; background:rgba(0,212,255,0.05);">
+      <a href="{% url 'accounts:profile' %}" style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#ccd6ff; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid #00d4ff; background:rgba(0,212,255,0.05);">
         <i class="bi bi-person" style="color:#00d4ff;"></i> My Profile
       </a>
-      <a href="{% url 'orders:order_list' %}"
-         style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#8899cc; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid transparent; transition:all .2s;"
+      <a href="{% url 'orders:order_list' %}" style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#8899cc; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid transparent; transition:all .2s;"
          onmouseover="this.style.color='#00d4ff'; this.style.borderColor='#00d4ff'; this.style.background='rgba(0,212,255,0.05)'"
          onmouseout="this.style.color='#8899cc'; this.style.borderColor='transparent'; this.style.background='transparent'">
         <i class="bi bi-bag"></i> My Orders
       </a>
-      <a href="{% url 'store:wishlist' %}"
-         style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#8899cc; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid transparent; transition:all .2s;"
+      <a href="{% url 'store:wishlist' %}" style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#8899cc; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid transparent; transition:all .2s;"
          onmouseover="this.style.color='#00d4ff'; this.style.borderColor='#00d4ff'; this.style.background='rgba(0,212,255,0.05)'"
          onmouseout="this.style.color='#8899cc'; this.style.borderColor='transparent'; this.style.background='transparent'">
         <i class="bi bi-heart"></i> Wishlist
       </a>
-      <a href="{% url 'accounts:logout' %}"
-         style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#ff2d78; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid transparent; transition:all .2s;"
+      <a href="{% url 'accounts:logout' %}" style="display:flex; align-items:center; gap:10px; padding:12px 20px; color:#ff2d78; text-decoration:none; font-size:.88rem; font-weight:500; border-left:3px solid transparent; transition:all .2s;"
          onmouseover="this.style.borderColor='#ff2d78'; this.style.background='rgba(255,45,120,0.05)'"
          onmouseout="this.style.borderColor='transparent'; this.style.background='transparent'">
         <i class="bi bi-box-arrow-right"></i> Logout
@@ -50,6 +41,55 @@
   <!-- MAIN CONTENT -->
   <div style="flex:1; display:flex; flex-direction:column; gap:24px;">
 
+    <!-- LOYALTY POINTS CARD -->
+    <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:16px; overflow:hidden;">
+      <div style="padding:16px 24px; border-bottom:1px solid rgba(0,212,255,0.1); display:flex; align-items:center; gap:10px;">
+        <i class="bi bi-star-fill" style="color:#f9ca24;"></i>
+        <span style="color:white; font-weight:600;">Loyalty Points</span>
+      </div>
+      <div style="padding:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;">
+        <div>
+          <p style="color:#8899cc; font-size:.85rem; margin:0 0 4px;">Available Balance</p>
+          <p style="color:#00d4ff; font-size:2.5rem; font-weight:700; margin:0; line-height:1;">
+            {{ profile.points }}<span style="font-size:1rem; color:#6b7db3;"> pts</span>
+          </p>
+          <p style="color:#6b7db3; font-size:.8rem; margin:6px 0 0;">
+            Worth ₹{{ profile.points|floatformat:0 }} discount &nbsp;·&nbsp; {{ profile.points_redeemed }} pts used lifetime
+          </p>
+          <p style="color:#43e97b; font-size:.8rem; margin:4px 0 0;">
+            <i class="bi bi-info-circle"></i> ₹50 spent = 2 pts earned · 100 pts = ₹10 discount
+          </p>
+        </div>
+        <div style="text-align:center;">
+          <div style="background:linear-gradient(135deg,#00d4ff,#7b2fff); border-radius:50%; width:75px; height:75px; display:flex; align-items:center; justify-content:center; margin:0 auto 8px; box-shadow:0 0 20px rgba(0,212,255,0.3);">
+            <i class="bi bi-trophy-fill" style="font-size:2rem; color:white;"></i>
+          </div>
+          <span style="color:white; font-weight:600; font-size:.85rem;">
+            {% if profile.points >= 5000 %}🏆 Platinum
+            {% elif profile.points >= 1000 %}🥇 Gold
+            {% else %}🥈 Silver{% endif %} Member
+          </span>
+        </div>
+      </div>
+      <!-- PROGRESS BAR -->
+      <div style="padding:0 24px 20px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+          <span style="color:#8899cc; font-size:.78rem;">Progress to next tier</span>
+          <span style="color:#00d4ff; font-size:.78rem;">
+            {% if profile.points >= 5000 %}Platinum reached!
+            {% elif profile.points >= 1000 %}{{ profile.points }}/5000 to Platinum
+            {% else %}{{ profile.points }}/1000 to Gold{% endif %}
+          </span>
+        </div>
+        <div style="background:#111d3c; border-radius:10px; height:8px; overflow:hidden;">
+          <div style="background:linear-gradient(135deg,#00d4ff,#7b2fff); height:100%; border-radius:10px;
+            width:{% if profile.points >= 5000 %}100{% elif profile.points >= 1000 %}{% widthratio profile.points 5000 100 %}{% else %}{% widthratio profile.points 1000 100 %}{% endif %}%;
+            transition:width .5s ease;">
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- EDIT PROFILE CARD -->
     <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:16px; overflow:hidden;">
       <div style="padding:16px 24px; border-bottom:1px solid rgba(0,212,255,0.1); display:flex; align-items:center; gap:10px;">
@@ -59,24 +99,18 @@
       <div style="padding:24px;">
         <form method="post" enctype="multipart/form-data">
           {% csrf_token %}
-
-          <!-- PHONE -->
           <div style="margin-bottom:16px;">
             <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">Phone</label>
             <input type="text" name="phone" value="{{ profile.phone }}"
                    style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none; font-family:'Poppins',sans-serif;"
                    onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'">
           </div>
-
-          <!-- ADDRESS -->
           <div style="margin-bottom:16px;">
             <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">Address</label>
             <textarea name="address" rows="3"
                       style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none; font-family:'Poppins',sans-serif; resize:vertical;"
                       onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'">{{ profile.address }}</textarea>
           </div>
-
-          <!-- CITY & STATE -->
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
             <div>
               <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">City</label>
@@ -91,22 +125,17 @@
                      onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'">
             </div>
           </div>
-
-          <!-- PINCODE -->
           <div style="margin-bottom:16px;">
             <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">Pincode</label>
             <input type="text" name="pincode" value="{{ profile.pincode }}"
                    style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none; font-family:'Poppins',sans-serif;"
                    onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'">
           </div>
-
-          <!-- AVATAR UPLOAD -->
           <div style="margin-bottom:24px;">
             <label style="color:#8899cc; font-size:.85rem; font-weight:500; display:block; margin-bottom:6px;">Profile Photo</label>
             {% if profile.avatar %}
               <div style="display:flex; align-items:center; gap:14px; margin-bottom:10px;">
-                <img src="{{ profile.avatar.url }}"
-                     style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid rgba(0,212,255,0.3);">
+                <img src="{{ profile.avatar.url }}" style="width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid rgba(0,212,255,0.3);">
                 <span style="color:#8899cc; font-size:.82rem;">Current photo</span>
               </div>
             {% endif %}
@@ -123,7 +152,6 @@
             </div>
             <p id="file-name" style="color:#00d4ff; font-size:.8rem; margin-top:6px; display:none;"></p>
           </div>
-
           <button type="submit"
                   style="background:linear-gradient(135deg,#00d4ff,#7b2fff); border:none; color:white; font-weight:600; padding:12px 32px; border-radius:10px; font-size:.9rem; cursor:pointer; font-family:'Poppins',sans-serif;">
             <i class="bi bi-save"></i> Save Changes

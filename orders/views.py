@@ -6,6 +6,8 @@ import stripe
 from cart.cart import Cart
 from .models import Order, OrderItem
 from accounts.loyalty import award_points
+from decimal import Decimal
+from .tasks import send_order_confirmation_email
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -20,12 +22,12 @@ def checkout(request):
     if request.method == 'POST':
         # Handle points redemption
         points_to_use = int(request.POST.get('use_points', 0) or 0)
-        discount = 0
+        discount = Decimal('0.00')
         if points_to_use >= 100:
             from accounts.loyalty import redeem_points
-            discount = redeem_points(request.user, points_to_use)
+            discount = Decimal(str(redeem_points(request.user, points_to_use)))
 
-        total = max(cart.get_total_price() - discount, 0)
+        total = max(cart.get_total_price() - discount, Decimal('0.00'))
 
         order = Order.objects.create(
             user        = request.user,
@@ -55,6 +57,10 @@ def checkout(request):
             order.save()
             earned = award_points(request.user, total)
             cart.clear()
+            
+            # Send order confirmation email asynchronously
+            send_order_confirmation_email.delay(order.id)
+            
             messages.success(request, f'Order #{order.id} placed! You earned {earned} loyalty points.')
             return redirect('orders:order_detail', order_id=order.id)
 
@@ -82,15 +88,29 @@ def stripe_payment(request, order_id):
             'quantity': item.quantity,
         })
 
-    session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        line_items=line_items,
-        mode='payment',
-        customer_email=order.email,
-        success_url=request.build_absolute_uri(f'/orders/success/{order.id}/'),
-        cancel_url=request.build_absolute_uri(f'/orders/cancel/{order.id}/'),
-        metadata={'order_id': order.id},
-    )
+    session_kwargs = {
+        'payment_method_types': ['card'],
+        'line_items': line_items,
+        'mode': 'payment',
+        'customer_email': order.email,
+        'success_url': request.build_absolute_uri(f'/orders/success/{order.id}/'),
+        'cancel_url': request.build_absolute_uri(f'/orders/cancel/{order.id}/'),
+        'metadata': {'order_id': order.id},
+    }
+
+    subtotal = sum(item.price * item.quantity for item in order.items.all())
+    discount = subtotal - order.total_price
+
+    if discount > 0:
+        coupon = stripe.Coupon.create(
+            amount_off=int(discount * 100),
+            currency='inr',
+            duration='once',
+            name='Loyalty Points Discount'
+        )
+        session_kwargs['discounts'] = [{'coupon': coupon.id}]
+
+    session = stripe.checkout.Session.create(**session_kwargs)
 
     return redirect(session.url, permanent=False)
 
@@ -103,6 +123,10 @@ def payment_success(request, order_id):
     earned = award_points(request.user, order.total_price)
     cart = Cart(request)
     cart.clear()
+    
+    # Send order confirmation email asynchronously
+    send_order_confirmation_email.delay(order.id)
+    
     messages.success(request, f'Payment successful! Order #{order.id} confirmed. You earned {earned} loyalty points.')
     return redirect('orders:order_detail', order_id=order.id)
 
@@ -110,8 +134,19 @@ def payment_success(request, order_id):
 @login_required
 def payment_cancel(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    subtotal = sum(item.price * item.quantity for item in order.items.all())
+    discount = subtotal - order.total_price
+    if discount > 0:
+        points_used = int(discount * 10)
+        from accounts.models import Profile
+        profile = Profile.objects.get(user=request.user)
+        profile.points += points_used
+        profile.points_redeemed -= points_used
+        profile.save()
+
     order.delete()
-    messages.error(request, 'Payment cancelled. Your order was not placed.')
+    messages.error(request, 'Payment cancelled. Your order was not placed. Loyalty points have been refunded.')
     return redirect('cart:cart_detail')
 
 

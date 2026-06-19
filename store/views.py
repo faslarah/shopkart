@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from django.http import JsonResponse
 from .models import Category, Product, Review
 
 
@@ -131,7 +132,17 @@ def wishlist_toggle(request, product_id):
     obj, created = Wishlist.objects.get_or_create(user=request.user, product=product)
     if not created:
         obj.delete()
-        messages.info(request, f'Removed {product.name} from wishlist.')
+        action = 'removed'
+        msg = f'Removed {product.name} from wishlist.'
     else:
-        messages.success(request, f'Added {product.name} to wishlist.')
+        action = 'added'
+        msg = f'Added {product.name} to wishlist.'
+        
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'success', 'action': action, 'message': msg})
+        
+    if action == 'removed':
+        messages.info(request, msg)
+    else:
+        messages.success(request, msg)
     return redirect(request.META.get('HTTP_REFERER', '/'))

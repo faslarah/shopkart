@@ -28,6 +28,7 @@
     <!-- WISHLIST BUTTON -->
     {% if user.is_authenticated %}
     <a href="{% url 'store:wishlist_toggle' product.id %}"
+       class="wishlist-toggle-btn"
        style="position:absolute; top:10px; right:10px; width:34px; height:34px; background:rgba(13,21,53,0.9); border:1px solid rgba(0,212,255,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; z-index:2; transition:all .2s;">
       {% if product.id in wishlist_ids %}
         <i class="bi bi-heart-fill" style="color:#ff2d78; font-size:.9rem;"></i>

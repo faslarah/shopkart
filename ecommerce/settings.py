@@ -93,3 +93,23 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
 STRIPE_PUBLIC_KEY = 'pk_test_51TiSQsQlJh93rJ2NVAXTwYjBDm0VgSU28DG4ufzfI8oqS71CQiseYeiOLh9I7SkcLI9kdUPQHf5AASGAFIALPDIU00VKueI4jH'
 STRIPE_SECRET_KEY = 'sk_test_51TiSQsQlJh93rJ2Nqwiun0UK2j1ui7qlFpUdOtWhf111ZGWWZOvvVe5IPxIJnIyQxNfnPo2Svp1qXGTb7MzgmsXF00J415fzHu'
+
+# ==========================================
+# EMAIL SMTP CONFIGURATION
+# ==========================================
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # e.g., 'smtp.gmail.com' for Gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'faseelarahma987@gmail.com' # Replace with your email
+EMAIL_HOST_PASSWORD = 'mxwp rycj vxen mzru' # Replace with your app password
+
+# ==========================================
+# CELERY CONFIGURATION
+# ==========================================
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE

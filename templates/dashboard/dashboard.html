@@ -163,10 +163,10 @@
   </div>
 
   <!-- TABLES ROW -->
-  <div style="display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:14px; align-items:start;">
+  <div style="display:grid; grid-template-columns:2fr 1fr; gap:14px; margin-bottom:14px; align-items:stretch;">
 
     <!-- RECENT ORDERS -->
-    <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:14px; overflow:hidden;">
+    <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; height:100%;">
       <div style="padding:14px 18px; border-bottom:1px solid rgba(0,212,255,0.1); display:flex; justify-content:space-between; align-items:center;">
         <h6 style="color:white; font-weight:600; margin:0; font-size:.9rem;">
           <i class="bi bi-clock-history" style="color:#00d4ff;"></i> Recent Orders
@@ -214,8 +214,11 @@
       </div>
     </div>
 
-    <!-- LOW STOCK -->
-    <div style="background:#0d1535; border:1px solid rgba(255,45,120,0.2); border-radius:14px; overflow:hidden;height:fit-content;">
+    <!-- RIGHT COLUMN -->
+    <div style="display:flex; flex-direction:column; gap:14px; height:100%;">
+
+      <!-- LOW STOCK -->
+      <div style="background:#0d1535; border:1px solid rgba(255,45,120,0.2); border-radius:14px; overflow:hidden; height:fit-content;">
       <div style="padding:14px 18px; border-bottom:1px solid rgba(255,45,120,0.15);">
         <h6 style="color:#ff2d78; font-weight:600; margin:0; font-size:.9rem;">
           <i class="bi bi-exclamation-triangle"></i> Low Stock Alert
@@ -241,51 +244,52 @@
           </p>
         {% endfor %}
       </div>
+      </div>
+
+      <!-- RECENT CUSTOMERS -->
+      <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:14px; overflow:hidden; display:flex; flex-direction:column; flex:1;">
+        <div style="padding:14px 18px; border-bottom:1px solid rgba(0,212,255,0.1); display:flex; justify-content:space-between; align-items:center;">
+          <h6 style="color:white; font-weight:600; margin:0; font-size:.9rem;">
+            <i class="bi bi-people" style="color:#ff2d78;"></i> Recent Customers
+          </h6>
+          <a href="{% url 'admin:auth_user_changelist' %}" style="color:#00d4ff; font-size:.75rem; text-decoration:none; font-weight:500;">View All</a>
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse;">
+            <thead>
+              <tr style="background:#111d3c;">
+                <th style="padding:10px 16px; color:#6b7db3; font-size:.72rem; text-align:left; font-weight:600; letter-spacing:.5px;">CUSTOMER</th>
+                <th style="padding:10px 16px; color:#6b7db3; font-size:.72rem; text-align:left; font-weight:600; letter-spacing:.5px;">JOINED</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for customer in recent_customers %}
+              <tr style="border-bottom:1px solid rgba(0,212,255,0.06); transition:background .2s;"
+                  onmouseover="this.style.background='rgba(0,212,255,0.04)'"
+                  onmouseout="this.style.background='transparent'">
+                <td style="padding:11px 16px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#00d4ff,#7b2fff); display:flex; align-items:center; justify-content:center; font-weight:700; color:white; font-size:.8rem; flex-shrink:0;">
+                      {{ customer.username|first|upper }}
+                    </div>
+                    <div>
+                      <span style="color:white; font-size:.85rem; font-weight:500; display:block;">{{ customer.get_full_name|default:customer.username }}</span>
+                      <span style="color:#8899cc; font-size:.72rem;">{{ customer.email }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td style="padding:11px 16px; color:#6b7db3; font-size:.78rem;">{{ customer.date_joined|date:"d M Y" }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="2" style="padding:24px; text-align:center; color:#6b7db3; font-size:.85rem;">No customers yet</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
 
-  </div>
-
-  <!-- RECENT CUSTOMERS -->
-  <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:14px; overflow:hidden; margin-bottom:20px;">
-    <div style="padding:14px 18px; border-bottom:1px solid rgba(0,212,255,0.1); display:flex; justify-content:space-between; align-items:center;">
-      <h6 style="color:white; font-weight:600; margin:0; font-size:.9rem;">
-        <i class="bi bi-people" style="color:#ff2d78;"></i> Recent Customers
-      </h6>
-      <a href="{% url 'admin:auth_user_changelist' %}" style="color:#00d4ff; font-size:.75rem; text-decoration:none; font-weight:500;">View All</a>
-    </div>
-    <div style="overflow-x:auto;">
-      <table style="width:100%; border-collapse:collapse;">
-        <thead>
-          <tr style="background:#111d3c;">
-            <th style="padding:10px 16px; color:#6b7db3; font-size:.72rem; text-align:left; font-weight:600; letter-spacing:.5px;">CUSTOMER</th>
-            <th style="padding:10px 16px; color:#6b7db3; font-size:.72rem; text-align:left; font-weight:600; letter-spacing:.5px;">EMAIL</th>
-            <th style="padding:10px 16px; color:#6b7db3; font-size:.72rem; text-align:left; font-weight:600; letter-spacing:.5px;">JOINED</th>
-            <th style="padding:10px 16px; color:#6b7db3; font-size:.72rem; text-align:left; font-weight:600; letter-spacing:.5px;">ORDERS</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for customer in recent_customers %}
-          <tr style="border-bottom:1px solid rgba(0,212,255,0.06); transition:background .2s;"
-              onmouseover="this.style.background='rgba(0,212,255,0.04)'"
-              onmouseout="this.style.background='transparent'">
-            <td style="padding:11px 16px;">
-              <div style="display:flex; align-items:center; gap:10px;">
-                <div style="width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#00d4ff,#7b2fff); display:flex; align-items:center; justify-content:center; font-weight:700; color:white; font-size:.8rem; flex-shrink:0;">
-                  {{ customer.username|first|upper }}
-                </div>
-                <span style="color:white; font-size:.85rem; font-weight:500;">{{ customer.get_full_name|default:customer.username }}</span>
-              </div>
-            </td>
-            <td style="padding:11px 16px; color:#8899cc; font-size:.82rem;">{{ customer.email }}</td>
-            <td style="padding:11px 16px; color:#6b7db3; font-size:.78rem;">{{ customer.date_joined|date:"d M Y" }}</td>
-            <td style="padding:11px 16px; color:#00d4ff; font-weight:600; font-size:.85rem;">{{ customer.orders.count }}</td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="4" style="padding:24px; text-align:center; color:#6b7db3; font-size:.85rem;">No customers yet</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
   </div>
 
 </div>

@@ -5,6 +5,7 @@ from django.contrib import messages
 from .forms import RegisterForm, ProfileForm
 from .models import Profile
 from orders.models import Order
+from .tasks import send_welcome_email
 
 
 def register(request):
@@ -14,6 +15,10 @@ def register(request):
             user = form.save()
             Profile.objects.create(user=user)
             login(request, user)
+            
+            # Send welcome email asynchronously
+            send_welcome_email.delay(user.email, user.first_name)
+            
             messages.success(request, 'Account created! Welcome to ShopKart.')
             return redirect('store:home')
     else:

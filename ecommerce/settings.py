@@ -1,10 +1,15 @@
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-1%*5^t3cu8-l1u)rotzd=e@^@tddmov503i-!ht(#1)ak_0pp9'
+# Load environment variables from .env file
+load_dotenv(BASE_DIR / '.env')
 
-DEBUG = True
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-1%*5^t3cu8-l1u)rotzd=e@^@tddmov503i-!ht(#1)ak_0pp9')
+
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
@@ -91,8 +96,8 @@ CART_SESSION_ID = 'cart'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
-STRIPE_PUBLIC_KEY = 'pk_test_51TiSQsQlJh93rJ2NVAXTwYjBDm0VgSU28DG4ufzfI8oqS71CQiseYeiOLh9I7SkcLI9kdUPQHf5AASGAFIALPDIU00VKueI4jH'
-STRIPE_SECRET_KEY = 'sk_test_51TiSQsQlJh93rJ2Nqwiun0UK2j1ui7qlFpUdOtWhf111ZGWWZOvvVe5IPxIJnIyQxNfnPo2Svp1qXGTb7MzgmsXF00J415fzHu'
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY', '')
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', '')
 
 # ==========================================
 # EMAIL SMTP CONFIGURATION
@@ -101,8 +106,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # e.g., 'smtp.gmail.com' for Gmail
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'faseelarahma987@gmail.com' # Replace with your email
-EMAIL_HOST_PASSWORD = 'mxwp rycj vxen mzru' # Replace with your app password
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
 # ==========================================
 # CELERY CONFIGURATION

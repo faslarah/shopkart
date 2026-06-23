@@ -5,6 +5,7 @@ from django.conf import settings
 import stripe
 from cart.cart import Cart
 from .models import Order, OrderItem
+from .tasks import send_order_confirmation_email
 from accounts.models import LoyaltySettings, Profile
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -141,6 +142,7 @@ def cod_confirm(request, order_id):
     cart = Cart(request)
     cart.clear()
     earned = award_purchase_points(request.user, order)
+    send_order_confirmation_email(order.id)
     messages.success(request, f'Order #{order.id} placed! You earned {earned} loyalty points.')
     return redirect('orders:order_detail', order_id=order.id)
 
@@ -154,6 +156,7 @@ def payment_success(request, order_id):
     cart = Cart(request)
     cart.clear()
     earned = award_purchase_points(request.user, order)
+    send_order_confirmation_email(order.id)
     messages.success(request, f'Payment successful! Order #{order.id} confirmed. You earned {earned} loyalty points.')
     return redirect('orders:order_detail', order_id=order.id)
 

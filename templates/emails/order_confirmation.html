@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
+    .email-container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #00d4ff, #7b2fff); padding: 30px 20px; text-align: center; color: white; }
+    .header h1 { margin: 0; font-size: 24px; font-weight: bold; }
+    .content { padding: 30px; color: #333333; line-height: 1.6; }
+    .content h2 { color: #7b2fff; margin-top: 0; }
+    .order-details { background: #f9f9fc; border: 1px solid #e0e0f5; border-radius: 8px; padding: 20px; margin: 20px 0; }
+    .item-row { display: flex; justify-content: space-between; border-bottom: 1px solid #eeeeee; padding: 10px 0; }
+    .item-row:last-child { border-bottom: none; }
+    .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; color: #00d4ff; border-top: 2px solid #eeeeee; padding-top: 15px; margin-top: 10px; }
+    .address-box { background: #f9f9fc; border-left: 4px solid #43e97b; padding: 15px; margin-top: 20px; }
+    .footer { text-align: center; padding: 20px; color: #888888; font-size: 12px; background: #fafafa; }
+</style>
+</head>
+<body>
+<div class="email-container">
+    <div class="header">
+        <h1>Order Confirmation</h1>
+        <p>Thank you for shopping at OpenMall!</p>
+    </div>
+    
+    <div class="content">
+        <h2>Hi {{ order.first_name }},</h2>
+        <p>We're thrilled to confirm that your order has been successfully placed. We are getting it ready for shipment right now!</p>
+        
+        <div class="order-details">
+            <h3 style="margin-top:0; font-size: 16px; color:#444;">Order Summary</h3>
+            {% for item in order.items.all %}
+            <div class="item-row">
+                <span>{{ item.quantity }}x {{ item.product.name }}</span>
+                <span>₹{{ item.get_cost }}</span>
+            </div>
+            {% endfor %}
+            <div class="total-row">
+                <span>Total Paid:</span>
+                <span>₹{{ order.total_price }}</span>
+            </div>
+        </div>
+
+        <div class="address-box">
+            <h3 style="margin-top:0; font-size: 16px; color:#444;">Shipping Address</h3>
+            <p style="margin:0;">
+                {{ order.first_name }} {{ order.last_name }}<br>
+                {{ order.address }}<br>
+                {{ order.city }}, {{ order.state }} - {{ order.pincode }}
+            </p>
+        </div>
+
+        <p>We will notify you again as soon as your package ships. If you have any questions, feel free to reply to this email.</p>
+    </div>
+    
+    <div class="footer">
+        <p>&copy; {% now "Y" %} OpenMall. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

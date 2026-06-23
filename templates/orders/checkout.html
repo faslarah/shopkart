@@ -45,9 +45,7 @@
               </div>
 
               <!-- LOYALTY POINTS REDEMPTION -->
-              {% if user.is_authenticated %}
-              {% with profile=request.user.profile %}
-              {% if profile.points >= 100 %}
+              {% if ls.is_active and user.is_authenticated and profile.points >= ls.min_redeem_points %}
               <div class="col-12">
                 <div style="background:#111d3c; border:1px solid rgba(0,212,255,0.25); border-radius:12px; padding:18px;">
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -57,16 +55,19 @@
                       </p>
                       <p style="color:#8899cc; margin:0; font-size:.8rem; margin-top:3px;">
                         You have <strong style="color:#00d4ff;">{{ profile.points }} points</strong>
-                        worth ₹{% widthratio profile.points 10 1 %} discount
+                        · {{ ls.points_to_rupee }} pts = ₹{{ ls.rupee_per_redeem }} off
+                        · Min {{ ls.min_redeem_points }} pts
                       </p>
                     </div>
                     <span style="background:linear-gradient(135deg,#f9ca24,#f0932b); color:#111; font-weight:700; padding:6px 16px; border-radius:20px; font-size:.85rem;">
                       {{ profile.points }} pts
                     </span>
                   </div>
+
                   <div style="display:flex; gap:10px; align-items:center;">
-                    <input type="number" name="use_points" id="points-input"
-                           min="0" max="{{ profile.points }}" step="100" value="0"
+                    <input type="number" name="redeem_points" id="points-input"
+                           min="0" max="{{ profile.points }}"
+                           step="{{ ls.points_to_rupee }}" value="0"
                            style="flex:1; background:#0d1535; border:1px solid rgba(0,212,255,0.2); border-radius:8px; padding:10px 14px; color:white; font-size:.9rem; outline:none; font-family:'Poppins',sans-serif;"
                            onfocus="this.style.borderColor='#00d4ff'"
                            onblur="this.style.borderColor='rgba(0,212,255,0.2)'"
@@ -78,36 +79,44 @@
                       </p>
                     </div>
                   </div>
+
                   <!-- QUICK SELECT BUTTONS -->
                   <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
-                    <button type="button" onclick="setPoints(100)"
+                    {% if profile.points >= ls.min_redeem_points %}
+                    <button type="button" onclick="setPoints({{ ls.min_redeem_points }})"
                             style="background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.3); color:#00d4ff; padding:4px 12px; border-radius:8px; font-size:.78rem; cursor:pointer;">
-                      100 pts = ₹10
-                    </button>
-                    {% if profile.points >= 500 %}
-                    <button type="button" onclick="setPoints(500)"
-                            style="background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.3); color:#00d4ff; padding:4px 12px; border-radius:8px; font-size:.78rem; cursor:pointer;">
-                      500 pts = ₹50
+                      {{ ls.min_redeem_points }} pts = ₹{% widthratio ls.min_redeem_points ls.points_to_rupee ls.rupee_per_redeem %}
                     </button>
                     {% endif %}
                     {% if profile.points >= 1000 %}
                     <button type="button" onclick="setPoints(1000)"
                             style="background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.3); color:#00d4ff; padding:4px 12px; border-radius:8px; font-size:.78rem; cursor:pointer;">
-                      1000 pts = ₹100
+                      1000 pts = ₹{% widthratio 1000 ls.points_to_rupee ls.rupee_per_redeem %}
                     </button>
                     {% endif %}
                     <button type="button" onclick="setPoints({{ profile.points }})"
                             style="background:rgba(255,45,120,0.1); border:1px solid rgba(255,45,120,0.3); color:#ff2d78; padding:4px 12px; border-radius:8px; font-size:.78rem; cursor:pointer;">
-                      Use All
+                      Use All ({{ profile.points }} pts)
                     </button>
                   </div>
+
                   <p style="color:#6b7db3; font-size:.75rem; margin:8px 0 0;">
-                    <i class="bi bi-info-circle"></i> Min 100 pts · ₹50 spent = 2 pts earned · 100 pts = ₹10 off
+                    <i class="bi bi-info-circle"></i>
+                    ₹{{ ls.spend_amount }} spent = {{ ls.points_per_spend }} pt earned
+                    · {{ ls.points_to_rupee }} pts = ₹{{ ls.rupee_per_redeem }} off
                   </p>
                 </div>
               </div>
-              {% endif %}
-              {% endwith %}
+              {% elif ls.is_active and user.is_authenticated and profile.points > 0 %}
+              <div class="col-12">
+                <div style="background:#111d3c; border:1px solid rgba(249,202,36,0.2); border-radius:12px; padding:14px;">
+                  <p style="color:#f9ca24; margin:0; font-size:.85rem;">
+                    <i class="bi bi-star-fill"></i>
+                    You have <strong>{{ profile.points }} points</strong>
+                    — earn {{ ls.min_redeem_points }} pts minimum to redeem!
+                  </p>
+                </div>
+              </div>
               {% endif %}
 
               <!-- PAYMENT METHOD -->
@@ -159,22 +168,33 @@
           </div>
           {% endfor %}
           <hr style="border-color:rgba(0,212,255,0.1);">
-          <div class="d-flex justify-content-between fw-bold">
-            <span style="color:white;">Total</span>
-            <span style="color:#00d4ff; font-size:1.1rem;">₹{{ cart.get_total_price }}</span>
+          <div class="d-flex justify-content-between mb-1">
+            <span style="color:#8899cc;">Subtotal</span>
+            <span style="color:white;">₹{{ cart.get_total_price }}</span>
           </div>
-          <div class="d-flex justify-content-between mt-1">
+          <div class="d-flex justify-content-between mb-1">
             <span style="color:#43e97b; font-size:.85rem;">Points Discount</span>
-            <span style="color:#43e97b; font-size:.85rem; font-weight:600;">- ₹<span id="summary-discount">0</span></span>
+            <span style="color:#43e97b; font-size:.85rem; font-weight:600;">
+              - ₹<span id="summary-discount">0</span>
+            </span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span style="color:#43e97b; font-size:.85rem;">Delivery</span>
+            <span style="color:#43e97b; font-size:.85rem; font-weight:600;">FREE</span>
           </div>
           <hr style="border-color:rgba(0,212,255,0.1);">
           <div class="d-flex justify-content-between fw-bold">
             <span style="color:white;">Final Total</span>
-            <span style="color:#43e97b; font-size:1.1rem;" id="final-total">₹{{ cart.get_total_price }}</span>
+            <span style="color:#43e97b; font-size:1.1rem;" id="final-total">
+              ₹{{ cart.get_total_price }}
+            </span>
           </div>
-          <p class="mt-2 small" style="color:#43e97b;">
-            <i class="bi bi-truck"></i> Free Delivery
+          {% if ls.is_active %}
+          <p style="color:#f9ca24; font-size:.8rem; margin-top:10px; margin-bottom:0;">
+            <i class="bi bi-star-fill"></i>
+            You will earn ~<strong id="pts-to-earn">{{ cart.get_total_price|floatformat:0 }}</strong> pts on this order!
           </p>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -190,14 +210,23 @@
 </style>
 
 <script>
-const cartTotal = {{ cart.get_total_price }};
+const cartTotal   = {{ cart.get_total_price }};
+const convRate    = {{ ls.points_to_rupee|default:100 }};
+const rupeeRate   = {{ ls.rupee_per_redeem|default:10 }};
+const spendAmt    = {{ ls.spend_amount|default:1 }};
+const ptsPerSpend = {{ ls.points_per_spend|default:1 }};
 
 function updateDiscount(pts) {
   pts = parseInt(pts) || 0;
-  const discount = Math.floor(pts / 10);
-  document.getElementById('discount-preview').textContent = discount;
-  document.getElementById('summary-discount').textContent = discount;
-  document.getElementById('final-total').textContent = '₹' + Math.max(cartTotal - discount, 0);
+  const discount = (pts / convRate) * rupeeRate;
+  const newTotal = Math.max(cartTotal - discount, 0);
+  const ptsEarn  = Math.floor(newTotal / spendAmt) * ptsPerSpend;
+
+  document.getElementById('discount-preview').textContent  = discount.toFixed(2);
+  document.getElementById('summary-discount').textContent  = discount.toFixed(2);
+  document.getElementById('final-total').textContent       = '₹' + newTotal.toFixed(2);
+  const earnEl = document.getElementById('pts-to-earn');
+  if (earnEl) earnEl.textContent = ptsEarn;
 }
 
 function setPoints(pts) {
@@ -209,5 +238,3 @@ function setPoints(pts) {
 }
 </script>
 {% endblock %}
-
-

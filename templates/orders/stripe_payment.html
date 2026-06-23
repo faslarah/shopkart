@@ -9,7 +9,6 @@
     </div>
     <div class="card-body p-4">
 
-      <!-- ORDER SUMMARY -->
       <div class="mb-4 p-3 rounded" style="background:var(--dark4); border:1px solid rgba(0,212,255,0.15);">
         <div class="d-flex justify-content-between">
           <span style="color:#8899cc;">Order Total</span>
@@ -17,7 +16,6 @@
         </div>
       </div>
 
-      <!-- STRIPE CARD FORM -->
       <div id="payment-form">
         <div class="mb-3">
           <label class="form-label">Card Details</label>
@@ -27,7 +25,6 @@
           <div id="card-errors" style="color:#ff2d78; font-size:.85rem; margin-top:8px;"></div>
         </div>
 
-        <!-- TEST CARD INFO -->
         <div class="p-3 mb-3 rounded" style="background:rgba(0,212,255,0.05); border:1px solid rgba(0,212,255,0.15);">
           <p class="mb-1" style="color:#00d4ff; font-size:.82rem; font-weight:600;">
             <i class="bi bi-info-circle"></i> Test Card Details
@@ -56,7 +53,6 @@
 <script>
   const stripe = Stripe('{{ stripe_public_key }}');
   const elements = stripe.elements();
-
   const cardElement = elements.create('card', {
     style: {
       base: {
@@ -69,20 +65,15 @@
       invalid: { color: '#ff2d78', iconColor: '#ff2d78' }
     }
   });
-
   cardElement.mount('#card-element');
-
   cardElement.on('change', function(event) {
-    const errorDiv = document.getElementById('card-errors');
-    errorDiv.textContent = event.error ? event.error.message : '';
+    document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
   });
-
   async function handlePayment(e) {
     e.preventDefault();
     const btn = document.getElementById('pay-btn');
     btn.disabled = true;
     btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
-
     const { paymentIntent, error } = await stripe.confirmCardPayment(
       '{{ client_secret }}',
       {
@@ -95,7 +86,6 @@
         }
       }
     );
-
     if (error) {
       document.getElementById('card-errors').textContent = error.message;
       btn.disabled = false;

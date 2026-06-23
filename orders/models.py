@@ -10,20 +10,21 @@ class Order(models.Model):
         ('delivered',  'Delivered'),
         ('cancelled',  'Cancelled'),
     ]
-    user        = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
-    first_name  = models.CharField(max_length=100)
-    last_name   = models.CharField(max_length=100)
-    email       = models.EmailField()
-    phone       = models.CharField(max_length=15)
-    address     = models.TextField()
-    city        = models.CharField(max_length=100)
-    state       = models.CharField(max_length=100)
-    pincode     = models.CharField(max_length=10)
-    created     = models.DateTimeField(auto_now_add=True)
-    updated     = models.DateTimeField(auto_now=True)
-    paid        = models.BooleanField(default=False)
-    status      = models.CharField(max_length=20, choices=STATUS, default='pending')
-    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    user            = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    first_name      = models.CharField(max_length=100)
+    last_name       = models.CharField(max_length=100)
+    email           = models.EmailField()
+    phone           = models.CharField(max_length=15)
+    address         = models.TextField()
+    city            = models.CharField(max_length=100)
+    state           = models.CharField(max_length=100)
+    pincode         = models.CharField(max_length=10)
+    created         = models.DateTimeField(auto_now_add=True)
+    updated         = models.DateTimeField(auto_now=True)
+    paid            = models.BooleanField(default=False)
+    status          = models.CharField(max_length=20, choices=STATUS, default='pending')
+    total_price     = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    points_redeemed = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ['-created']

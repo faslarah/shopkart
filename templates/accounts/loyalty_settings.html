@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+{% block title %}Loyalty Settings - OpenMall{% endblock %}
+{% block content %}
+<div style="max-width:800px; margin:0 auto; padding:0 10px;">
+
+  <!-- HEADER -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+    <div>
+      <h3 style="color:white; font-weight:700; margin:0;">Loyalty Points Settings</h3>
+      <p style="color:#6b7db3; font-size:.85rem; margin:4px 0 0;">Configure how customers earn and redeem loyalty points.</p>
+    </div>
+    <a href="{% url 'dashboard:dashboard' %}"
+       style="background:rgba(0,212,255,0.1); border:1px solid rgba(0,212,255,0.3); color:#00d4ff; padding:8px 18px; border-radius:10px; text-decoration:none; font-size:.85rem; font-weight:600;">
+      <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- ENABLE/DISABLE -->
+    <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:16px; padding:20px; margin-bottom:20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <p style="color:white; font-weight:600; margin:0; font-size:.95rem;">Loyalty Points System</p>
+          <p style="color:#6b7db3; font-size:.82rem; margin:4px 0 0;">Enable or disable the entire loyalty points system</p>
+        </div>
+        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+          <input type="checkbox" name="is_active" id="is_active"
+                 {% if settings.is_active %}checked{% endif %}
+                 style="display:none;" onchange="toggleStatus(this)">
+          <div id="toggle-bg" onclick="document.getElementById('is_active').click()"
+               style="width:52px; height:28px; border-radius:14px; position:relative; cursor:pointer; transition:background .3s;
+               background:{% if settings.is_active %}linear-gradient(135deg,#00d4ff,#7b2fff){% else %}#2a3560{% endif %};">
+            <div id="toggle-dot"
+                 style="width:22px; height:22px; background:white; border-radius:50%; position:absolute; top:3px; transition:left .3s;
+                 left:{% if settings.is_active %}27px{% else %}3px{% endif %};">
+            </div>
+          </div>
+          <span id="toggle-label" style="color:{% if settings.is_active %}#00d4ff{% else %}#6b7db3{% endif %}; font-weight:600; font-size:.88rem;">
+            {% if settings.is_active %}Active{% else %}Inactive{% endif %}
+          </span>
+        </label>
+      </div>
+    </div>
+
+    <!-- EARNING RULES -->
+    <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:16px; padding:20px; margin-bottom:20px;">
+      <h6 style="color:#00d4ff; font-weight:600; margin:0 0 16px; font-size:.9rem;">
+        <i class="bi bi-plus-circle"></i> Points Earning Rules
+      </h6>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div>
+          <label style="color:#8899cc; font-size:.82rem; font-weight:500; display:block; margin-bottom:6px;">
+            Spend Amount (₹)
+            <span style="color:#6b7db3; font-weight:400;"> — Customer must spend this much</span>
+          </label>
+          <input type="number" name="spend_amount" value="{{ settings.spend_amount }}" min="1"
+                 style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none;"
+                 onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'"
+                 oninput="updatePreview()">
+        </div>
+        <div>
+          <label style="color:#8899cc; font-size:.82rem; font-weight:500; display:block; margin-bottom:6px;">
+            Points Awarded
+            <span style="color:#6b7db3; font-weight:400;"> — Points earned per spend amount</span>
+          </label>
+          <input type="number" name="points_per_spend" value="{{ settings.points_per_spend }}" min="1"
+                 style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none;"
+                 onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'"
+                 oninput="updatePreview()">
+        </div>
+      </div>
+      <div style="background:#111d3c; border-radius:10px; padding:12px 16px; margin-top:14px;">
+        <p style="color:#43e97b; font-size:.82rem; margin:0;" id="earn-preview">
+          <i class="bi bi-info-circle"></i>
+          Every ₹{{ settings.spend_amount }} spent = {{ settings.points_per_spend }} point(s) earned
+        </p>
+      </div>
+    </div>
+
+    <!-- REDEMPTION RULES -->
+    <div style="background:#0d1535; border:1px solid rgba(0,212,255,0.15); border-radius:16px; padding:20px; margin-bottom:20px;">
+      <h6 style="color:#f9ca24; font-weight:600; margin:0 0 16px; font-size:.9rem;">
+        <i class="bi bi-dash-circle"></i> Points Redemption Rules
+      </h6>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+        <div>
+          <label style="color:#8899cc; font-size:.82rem; font-weight:500; display:block; margin-bottom:6px;">
+            Points for Discount
+            <span style="color:#6b7db3; font-weight:400;"> — Points needed</span>
+          </label>
+          <input type="number" name="points_to_rupee" value="{{ settings.points_to_rupee }}" min="1"
+                 style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none;"
+                 onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'"
+                 oninput="updatePreview()">
+        </div>
+        <div>
+          <label style="color:#8899cc; font-size:.82rem; font-weight:500; display:block; margin-bottom:6px;">
+            Discount Value (₹)
+            <span style="color:#6b7db3; font-weight:400;"> — ₹ discount given</span>
+          </label>
+          <input type="number" name="rupee_per_redeem" value="{{ settings.rupee_per_redeem }}" min="1"
+                 style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none;"
+                 onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'"
+                 oninput="updatePreview()">
+        </div>
+      </div>
+      <div>
+        <label style="color:#8899cc; font-size:.82rem; font-weight:500; display:block; margin-bottom:6px;">
+          Minimum Points to Redeem
+          <span style="color:#6b7db3; font-weight:400;"> — Customer must have at least this many</span>
+        </label>
+        <input type="number" name="min_redeem_points" value="{{ settings.min_redeem_points }}" min="1"
+               style="width:100%; background:#111d3c; border:1px solid rgba(0,212,255,0.2); border-radius:10px; padding:10px 14px; color:white; font-size:.9rem; outline:none;"
+               onfocus="this.style.borderColor='#00d4ff'" onblur="this.style.borderColor='rgba(0,212,255,0.2)'"
+               oninput="updatePreview()">
+      </div>
+      <div style="background:#111d3c; border-radius:10px; padding:12px 16px; margin-top:14px;">
+        <p style="color:#f9ca24; font-size:.82rem; margin:0;" id="redeem-preview">
+          <i class="bi bi-info-circle"></i>
+          {{ settings.points_to_rupee }} points = ₹{{ settings.rupee_per_redeem }} discount · Min {{ settings.min_redeem_points }} points to redeem
+        </p>
+      </div>
+    </div>
+
+    <!-- CURRENT SUMMARY -->
+    <div style="background:linear-gradient(135deg,rgba(0,212,255,0.08),rgba(123,47,255,0.08)); border:1px solid rgba(0,212,255,0.2); border-radius:16px; padding:20px; margin-bottom:24px;">
+      <h6 style="color:white; font-weight:600; margin:0 0 14px; font-size:.9rem;">
+        <i class="bi bi-eye" style="color:#00d4ff;"></i> Live Preview
+      </h6>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; text-align:center;">
+        <div style="background:#111d3c; border-radius:12px; padding:14px;">
+          <p style="color:#6b7db3; font-size:.72rem; margin:0 0 4px; text-transform:uppercase; letter-spacing:1px;">Earn Rate</p>
+          <p style="color:#00d4ff; font-weight:700; font-size:1rem; margin:0;" id="preview-earn">
+            ₹{{ settings.spend_amount }} = {{ settings.points_per_spend }} pt
+          </p>
+        </div>
+        <div style="background:#111d3c; border-radius:12px; padding:14px;">
+          <p style="color:#6b7db3; font-size:.72rem; margin:0 0 4px; text-transform:uppercase; letter-spacing:1px;">Redeem Rate</p>
+          <p style="color:#f9ca24; font-weight:700; font-size:1rem; margin:0;" id="preview-redeem">
+            {{ settings.points_to_rupee }} pts = ₹{{ settings.rupee_per_redeem }}
+          </p>
+        </div>
+        <div style="background:#111d3c; border-radius:12px; padding:14px;">
+          <p style="color:#6b7db3; font-size:.72rem; margin:0 0 4px; text-transform:uppercase; letter-spacing:1px;">Min Redeem</p>
+          <p style="color:#43e97b; font-weight:700; font-size:1rem; margin:0;" id="preview-min">
+            {{ settings.min_redeem_points }} pts
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit"
+            style="background:linear-gradient(135deg,#00d4ff,#7b2fff); border:none; color:white; font-weight:600; padding:14px 40px; border-radius:12px; font-size:1rem; cursor:pointer; width:100%;">
+      <i class="bi bi-save"></i> Save Settings
+    </button>
+  </form>
+</div>
+
+<script>
+function updatePreview() {
+  const spend    = document.querySelector('[name=spend_amount]').value || 1;
+  const pts      = document.querySelector('[name=points_per_spend]').value || 1;
+  const ptsRedeem= document.querySelector('[name=points_to_rupee]').value || 100;
+  const rupee    = document.querySelector('[name=rupee_per_redeem]').value || 10;
+  const minPts   = document.querySelector('[name=min_redeem_points]').value || 500;
+
+  document.getElementById('earn-preview').innerHTML =
+    '<i class="bi bi-info-circle"></i> Every ₹' + spend + ' spent = ' + pts + ' point(s) earned';
+  document.getElementById('redeem-preview').innerHTML =
+    '<i class="bi bi-info-circle"></i> ' + ptsRedeem + ' points = ₹' + rupee + ' discount · Min ' + minPts + ' points to redeem';
+  document.getElementById('preview-earn').textContent    = '₹' + spend + ' = ' + pts + ' pt';
+  document.getElementById('preview-redeem').textContent  = ptsRedeem + ' pts = ₹' + rupee;
+  document.getElementById('preview-min').textContent     = minPts + ' pts';
+}
+
+function toggleStatus(cb) {
+  const bg    = document.getElementById('toggle-bg');
+  const dot   = document.getElementById('toggle-dot');
+  const label = document.getElementById('toggle-label');
+  if (cb.checked) {
+    bg.style.background = 'linear-gradient(135deg,#00d4ff,#7b2fff)';
+    dot.style.left      = '27px';
+    label.style.color   = '#00d4ff';
+    label.textContent   = 'Active';
+  } else {
+    bg.style.background = '#2a3560';
+    dot.style.left      = '3px';
+    label.style.color   = '#6b7db3';
+    label.textContent   = 'Inactive';
+  }
+}
+</script>
+{% endblock %}

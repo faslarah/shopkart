@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from .models import Category, Product, Review
 
 
+
 def home(request):
     categories  = Category.objects.all()[:8]
     featured    = Product.objects.filter(is_featured=True,   available=True)[:8]

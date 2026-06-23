@@ -39,7 +39,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="override" value="True">
                 <select name="quantity" class="form-select form-select-sm" onchange="this.form.submit()">
-                  {% for i in "12345678910" %}
+                  {% for i in "1234567890" %}
                     <option value="{{ forloop.counter }}"
                       {% if forloop.counter == item.quantity %}selected{% endif %}>
                       {{ forloop.counter }}

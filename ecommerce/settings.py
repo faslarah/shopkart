@@ -13,6 +13,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-1%*5^t3cu8-l1u)rotzd=
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://openmall.onrender.com', 'https://*.onrender.com']
 
 INSTALLED_APPS = [
     'django.contrib.admin',

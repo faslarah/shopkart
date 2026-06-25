@@ -7,5 +7,5 @@ pip install -r requirements.txt
 python manage.py collectstatic --no-input
 python manage.py migrate
 
-# Automatically create or update superuser password
-python manage.py shell -c "from django.contrib.auth.models import User; u, _ = User.objects.get_or_create(username='admin123'); u.set_password('admin123'); u.is_superuser=True; u.is_staff=True; u.save()"
+# Automatically create a superuser if it doesn't exist
+python manage.py shell -c "from django.contrib.auth.models import User; User.objects.filter(username='admin123').exists() or User.objects.create_superuser('admin123', 'admin@openmall.com', 'admin123')"

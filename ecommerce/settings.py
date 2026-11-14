@@ -95,11 +95,23 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # ==========================================
 # CLOUDINARY STORAGE (auto-enabled when env vars are set)
 # ==========================================
-if os.environ.get('CLOUDINARY_CLOUD_NAME'):
+import cloudinary
+
+_cloud_name = (os.environ.get('CLOUDINARY_CLOUD_NAME') or '').strip()
+_api_key = (os.environ.get('CLOUDINARY_API_KEY') or '').strip()
+_api_secret = (os.environ.get('CLOUDINARY_API_SECRET') or '').strip()
+
+if _cloud_name:
+    cloudinary.config(
+        cloud_name=_cloud_name,
+        api_key=_api_key,
+        api_secret=_api_secret,
+        secure=True,
+    )
     CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
-        'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
-        'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+        'CLOUD_NAME': _cloud_name,
+        'API_KEY': _api_key,
+        'API_SECRET': _api_secret,
     }
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:

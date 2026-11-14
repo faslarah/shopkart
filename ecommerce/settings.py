@@ -97,21 +97,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # ==========================================
 import cloudinary
 
-_cloud_name = (os.environ.get('CLOUDINARY_CLOUD_NAME') or '').strip()
-_api_key = (os.environ.get('CLOUDINARY_API_KEY') or '').strip()
-_api_secret = (os.environ.get('CLOUDINARY_API_SECRET') or '').strip()
+_cloudinary_url = (os.environ.get('CLOUDINARY_URL') or '').strip()
 
-if _cloud_name:
-    cloudinary.config(
-        cloud_name=_cloud_name,
-        api_key=_api_key,
-        api_secret=_api_secret,
-        secure=True,
-    )
+if _cloudinary_url:
+    # Use single CLOUDINARY_URL (most reliable method)
+    # Format: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+    cloudinary.config(cloudinary_url=_cloudinary_url, secure=True)
+    cfg = cloudinary.config()
     CLOUDINARY_STORAGE = {
-        'CLOUD_NAME': _cloud_name,
-        'API_KEY': _api_key,
-        'API_SECRET': _api_secret,
+        'CLOUD_NAME': cfg.cloud_name,
+        'API_KEY': cfg.api_key,
+        'API_SECRET': cfg.api_secret,
     }
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 else:

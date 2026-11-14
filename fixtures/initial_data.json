@@ -1,0 +1,302 @@
+[
+  {
+    "model": "store.category",
+    "pk": 1,
+    "fields": {
+      "name": "Mobiles",
+      "slug": "mobiles",
+      "image": ""
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 2,
+    "fields": {
+      "name": "Electronics",
+      "slug": "electronics",
+      "image": ""
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 3,
+    "fields": {
+      "name": "Fashion",
+      "slug": "fashion",
+      "image": ""
+    }
+  },
+  {
+    "model": "store.category",
+    "pk": 4,
+    "fields": {
+      "name": "Books",
+      "slug": "books",
+      "image": ""
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 1,
+    "fields": {
+      "category": 1,
+      "name": "iphone 15",
+      "slug": "iphone-15",
+      "image": "",
+      "description": "",
+      "price": "47999.00",
+      "original_price": "48999.00",
+      "stock": 10,
+      "available": true,
+      "brand": "Apple",
+      "rating": "5.0",
+      "rating_count": 5,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-12T10:00:42.312Z",
+      "updated": "2026-06-13T18:51:38.068Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 2,
+    "fields": {
+      "category": 2,
+      "name": "Led-TV",
+      "slug": "led-tv",
+      "image": "",
+      "description": "",
+      "price": "27999.00",
+      "original_price": "28999.00",
+      "stock": 5,
+      "available": true,
+      "brand": "Samsung",
+      "rating": "4.0",
+      "rating_count": 4,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-12T10:01:22.898Z",
+      "updated": "2026-06-13T18:54:53.458Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 3,
+    "fields": {
+      "category": 3,
+      "name": "Tshirt",
+      "slug": "tshirt",
+      "image": "",
+      "description": "",
+      "price": "349.00",
+      "original_price": "399.00",
+      "stock": 10,
+      "available": true,
+      "brand": "Adidas",
+      "rating": "4.0",
+      "rating_count": 3,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-12T10:01:53.636Z",
+      "updated": "2026-06-13T18:51:38.064Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 4,
+    "fields": {
+      "category": 4,
+      "name": "Maths",
+      "slug": "maths",
+      "image": "",
+      "description": "",
+      "price": "69.00",
+      "original_price": "89.00",
+      "stock": 2,
+      "available": true,
+      "brand": "NCERT",
+      "rating": "4.0",
+      "rating_count": 2,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-12T10:02:39.506Z",
+      "updated": "2026-06-18T05:06:12.388Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 5,
+    "fields": {
+      "category": 3,
+      "name": "Kurti",
+      "slug": "kurti",
+      "image": "",
+      "description": "",
+      "price": "299.00",
+      "original_price": "399.00",
+      "stock": 15,
+      "available": true,
+      "brand": "",
+      "rating": "4.0",
+      "rating_count": 0,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-13T18:16:52.266Z",
+      "updated": "2026-06-13T18:51:38.059Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 6,
+    "fields": {
+      "category": 1,
+      "name": "Samsung Galaxy S24",
+      "slug": "samsung-galaxy-s24",
+      "image": "",
+      "description": "",
+      "price": "55555.00",
+      "original_price": "59999.00",
+      "stock": 10,
+      "available": true,
+      "brand": "Samsung",
+      "rating": "4.3",
+      "rating_count": 5,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-13T19:36:08.528Z",
+      "updated": "2026-06-13T19:36:08.528Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 7,
+    "fields": {
+      "category": 2,
+      "name": "Table Fan",
+      "slug": "table-fan",
+      "image": "",
+      "description": "",
+      "price": "1999.00",
+      "original_price": "2500.00",
+      "stock": 11,
+      "available": true,
+      "brand": "Bajaj",
+      "rating": "4.0",
+      "rating_count": 5,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-13T19:38:47.689Z",
+      "updated": "2026-06-13T19:38:47.689Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 8,
+    "fields": {
+      "category": 4,
+      "name": "Sherleck Holmes",
+      "slug": "sherleck-holmes",
+      "image": "",
+      "description": "",
+      "price": "999.00",
+      "original_price": "1050.00",
+      "stock": 2,
+      "available": true,
+      "brand": "Oxford World's Classics",
+      "rating": "4.0",
+      "rating_count": 5,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-14T07:08:30.748Z",
+      "updated": "2026-06-14T07:10:56.086Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 9,
+    "fields": {
+      "category": 3,
+      "name": "Watch",
+      "slug": "watch",
+      "image": "",
+      "description": "",
+      "price": "2499.00",
+      "original_price": "2799.00",
+      "stock": 5,
+      "available": true,
+      "brand": "Fossil",
+      "rating": "4.0",
+      "rating_count": 5,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-14T07:38:29.280Z",
+      "updated": "2026-06-14T07:38:29.280Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 10,
+    "fields": {
+      "category": 3,
+      "name": "Bag",
+      "slug": "bag",
+      "image": "",
+      "description": "",
+      "price": "1499.00",
+      "original_price": "1650.00",
+      "stock": 7,
+      "available": true,
+      "brand": "Ashoka",
+      "rating": "4.0",
+      "rating_count": 5,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-14T07:39:17.423Z",
+      "updated": "2026-06-14T07:39:17.423Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 11,
+    "fields": {
+      "category": 3,
+      "name": "Shoes",
+      "slug": "shoes",
+      "image": "",
+      "description": "",
+      "price": "2999.00",
+      "original_price": "3500.00",
+      "stock": 9,
+      "available": true,
+      "brand": "Nike",
+      "rating": "4.0",
+      "rating_count": 5,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-14T07:40:12.802Z",
+      "updated": "2026-06-14T07:40:12.802Z"
+    }
+  },
+  {
+    "model": "store.product",
+    "pk": 12,
+    "fields": {
+      "category": 2,
+      "name": "Power bank",
+      "slug": "power-bank",
+      "image": "",
+      "description": "",
+      "price": "1700.00",
+      "original_price": "2000.00",
+      "stock": 20,
+      "available": true,
+      "brand": "",
+      "rating": "4.0",
+      "rating_count": 5,
+      "is_featured": false,
+      "is_bestseller": false,
+      "created": "2026-06-14T07:48:26.683Z",
+      "updated": "2026-06-14T07:48:26.683Z"
+    }
+  }
+]
